@@ -54,26 +54,29 @@ def genRem(f, gs, order):
     if f == Poly.zero():
         return Poly.zero()
 
-    for gi in gs:
-        degi = degLt(gi, order)
+    while True:
+        if f == Poly.zero():
+            break
+
+        stop = True
+
+        keys = list(f.info.keys())
+        keys.sort(key=order)
+        deg = keys[0]
         
-        while True:
-            stop = True
-
-            keys = list(f.info.keys())
-            keys.sort(key=order)
-
-            for deg in keys:
-                if dominates(deg, degi):
-                    stop = False
-                    coeff = f.info[deg]
-                    coeffi = gi.info[degi]
-                    quo = Poly.const(coeff / coeffi) * deg2term(coDeg(deg, degi), Poly)
-                    f = f - quo * gi
-                    break
+        for gi in gs:
+            degi = degLt(gi, order)
             
-            if stop:
+            if dominates(deg, degi):
+                stop = False
+                coeff = f.info[deg]
+                coeffi = gi.info[degi]
+                quo = Poly.const(coeff / coeffi) * deg2term(coDeg(deg, degi), Poly)
+                f = f - quo * gi
                 break
+                
+        if stop:
+            break
     
     return f
 
